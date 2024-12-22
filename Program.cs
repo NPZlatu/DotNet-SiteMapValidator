@@ -6,6 +6,7 @@ class SitmapValidator
 {
     private static string _urlString = "http://localhost:8080/v1/common/sitemap-deals";
     private static int _batchSize = 20;
+    private static SitemapReqClient _client = new SitemapReqClient();
 
     /// <summary>
     /// The function `RequestUrlsAsync` asynchronously requests a URL using a `SitemapReqClient` and
@@ -19,8 +20,7 @@ class SitmapValidator
     /// </returns>
     private static async Task<SitemapResponse> RequestUrlsAsync(string url)
     {
-        SitemapReqClient client = new SitemapReqClient();
-        return await client.Get(url);
+        return await _client.Get(url);
     }
 
     /// <summary>
