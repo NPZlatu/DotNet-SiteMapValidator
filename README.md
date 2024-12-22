@@ -16,7 +16,7 @@ This is a C# console application that validates URLs from a sitemap by making as
 
 ### Clone the repository:
 ```bash
-git clone https://github.com/yourusername/SitemapValidator.git
+git clone https://github.com/NPZlatu/SitemapValidator.git
 cd SitemapValidator
 ```
 
