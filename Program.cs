@@ -4,7 +4,7 @@ using System.Xml;
 
 class SitmapValidator
 {
-    private static string _urlString = "http://localhost:8080/v1/common/sitemap-deals";
+    private static string _urlString = "URL_OF_SITEMAP"; //place the URL of Sitemap here
     private static int _batchSize = 20;
     private static SitemapReqClient _client = new SitemapReqClient();
 
