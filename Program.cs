@@ -7,6 +7,8 @@ class SitmapValidator
     private static string _urlString = "URL_OF_SITEMAP"; //place the URL of Sitemap here
     private static int _batchSize = 20;
     private static SitemapReqClient _client = new SitemapReqClient();
+    private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(_batchSize); // Allow up to 20 concurrent requests.
+
 
     /// <summary>
     /// The function `RequestUrlsAsync` asynchronously requests a URL using a `SitemapReqClient` and
@@ -51,22 +53,6 @@ class SitmapValidator
     }
 
     /// <summary>
-    /// The function `GetBatches` takes a list of URLs and a batch size, and returns batches of URLs
-    /// based on the specified batch size.
-    /// </summary>
-    /// <param name="urls">The `urls` parameter is a list of strings containing the URLs that you want to
-    /// batch process.</param>
-    /// <param name="batchSize">The `batchSize` parameter in the `GetBatches` method specifies the number
-    /// of elements that should be included in each batch when splitting a list of URLs into
-    /// batches.</param>
-    private static IEnumerable<List<string>> GetBatches(List<string> urls, int batchSize)
-    {
-        for (int i = 0; i < urls.Count; i += batchSize)
-        {
-            yield return urls.Skip(i).Take(batchSize).ToList();
-        }
-    }
-    /// <summary>
     /// The Main function asynchronously loads URLs, requests them in batches, processes the responses,
     /// and logs the execution time.
     /// </summary>
@@ -76,20 +62,28 @@ class SitmapValidator
         var urls = await LoadUrlsAsync();
         var output = new Output();
 
-        foreach (var batch in GetBatches(urls, _batchSize))
+        var tasks = urls.Select(async url =>
         {
-            var tasks = batch.Select(url => RequestUrlsAsync(url));
-            SitemapResponse[] responses = await Task.WhenAll(tasks);
+            await _semaphore.WaitAsync();
 
-            foreach (var response in responses)
+            try
             {
+                var response = await RequestUrlsAsync(url);
+
                 if (response.Status == SitemapReqClient.NOT_OK)
                 {
                     output.AddRecord(response);
                 }
                 output.Log(response);
             }
-        }
+            finally
+            {
+                _semaphore.Release();
+            }
+
+        });
+
+        await Task.WhenAll(tasks);
 
         watch.Stop();
         string formattedTime = string.Format("{0:D2}:{1:D2}:{2:D2}",
