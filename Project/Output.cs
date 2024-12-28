@@ -5,7 +5,7 @@ public class Output
 {
     private TextWriter _writer;
     private CsvWriter _csvWriter;
-    private const string _outputFile = "output.csv";
+    private const string _outputFile = "../output.csv";
 
     public Output()
     {
