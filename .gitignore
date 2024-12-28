@@ -2,3 +2,4 @@ bin/
 obj/
 .nuget
 output.csv
+.DS_Store

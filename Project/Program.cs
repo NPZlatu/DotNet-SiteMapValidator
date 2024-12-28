@@ -4,7 +4,7 @@ using System.Xml;
 
 class SitmapValidator
 {
-    private static string _urlString = "URL_OF_SITEMAP"; //place the URL of Sitemap here
+    private static string _urlString = "http://localhost:8080/v1/common/sitemap-deals"; //place the URL of Sitemap here
     private static int _concurrencyLimit = 20;
     private static SitemapReqClient _client = new SitemapReqClient();
     private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(_concurrencyLimit); // Allow up to 20 concurrent requests.
